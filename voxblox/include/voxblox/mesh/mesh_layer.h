@@ -39,6 +39,7 @@ class MeshLayer {
       return *(it->second);
     } else {
       LOG(FATAL) << "Accessed unallocated mesh at " << index.transpose();
+      throw std::runtime_error("Accessed unallocated mesh");
     }
   }
 

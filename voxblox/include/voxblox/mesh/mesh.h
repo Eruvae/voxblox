@@ -157,7 +157,7 @@ struct Mesh {
   FloatingPoint block_size;
   Point origin;
 
-  bool updated;
+  mutable bool updated;
 };
 
 }  // namespace voxblox

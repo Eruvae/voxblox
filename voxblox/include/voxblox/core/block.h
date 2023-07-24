@@ -171,7 +171,7 @@ class Block {
   bool has_data() const { return has_data_; }
   bool& has_data() { return has_data_; }
 
-  void setUpdated(Update::Status status, bool value) {
+  void setUpdated(Update::Status status, bool value) const {
     updated_[status] = value;
   }
   void setUpdatedAll() { updated_.set(); }
@@ -210,7 +210,7 @@ class Block {
   FloatingPoint block_size_inv_;
 
   /// Is set to true when data is updated.
-  std::bitset<Update::kCount> updated_;
+  mutable std::bitset<Update::kCount> updated_;
 };
 
 }  // namespace voxblox

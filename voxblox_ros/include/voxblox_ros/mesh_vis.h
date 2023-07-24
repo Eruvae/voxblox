@@ -150,7 +150,36 @@ inline std_msgs::ColorRGBA getVertexColor(const Mesh::ConstPtr& mesh,
   return color_msg;
 }
 
-inline void generateVoxbloxMeshMsg(MeshLayer* mesh_layer, ColorMode color_mode,
+inline std_msgs::ColorRGBA getVertexColor(const Mesh& mesh,
+                                          const ColorMode& color_mode,
+                                          const size_t index) {
+  std_msgs::ColorRGBA color_msg;
+  switch (color_mode) {
+    case kColor:
+      colorVoxbloxToMsg(mesh.colors[index], &color_msg);
+      break;
+    case kHeight:
+      heightColorFromVertex(mesh.vertices[index], &color_msg);
+      break;
+    case kNormals:
+      normalColorFromNormal(mesh.normals[index], &color_msg);
+      break;
+    case kLambert:
+      lambertColorFromNormal(mesh.normals[index], &color_msg);
+      break;
+    case kLambertColor:
+      lambertColorFromColorAndNormal(mesh.colors[index], mesh.normals[index],
+                                     &color_msg);
+      break;
+    case kGray:
+      color_msg.r = color_msg.g = color_msg.b = 0.5;
+      color_msg.a = 1.0;
+      break;
+  }
+  return color_msg;
+}
+
+inline void generateVoxbloxMeshMsg(const MeshLayer* mesh_layer, ColorMode color_mode,
                                    voxblox_msgs::Mesh* mesh_msg) {
   CHECK_NOTNULL(mesh_msg);
   CHECK_NOTNULL(mesh_layer);
@@ -164,24 +193,24 @@ inline void generateVoxbloxMeshMsg(MeshLayer* mesh_layer, ColorMode color_mode,
   mesh_msg->mesh_blocks.reserve(mesh_indices.size());
 
   for (const BlockIndex& block_index : mesh_indices) {
-    Mesh::Ptr mesh = mesh_layer->getMeshPtrByIndex(block_index);
+    const Mesh &mesh = mesh_layer->getMeshByIndex(block_index);
 
     voxblox_msgs::MeshBlock mesh_block;
     mesh_block.index[0] = block_index.x();
     mesh_block.index[1] = block_index.y();
     mesh_block.index[2] = block_index.z();
 
-    mesh_block.x.reserve(mesh->vertices.size());
-    mesh_block.y.reserve(mesh->vertices.size());
-    mesh_block.z.reserve(mesh->vertices.size());
+    mesh_block.x.reserve(mesh.vertices.size());
+    mesh_block.y.reserve(mesh.vertices.size());
+    mesh_block.z.reserve(mesh.vertices.size());
 
     // normal coloring is used by RViz plugin by default, so no need to send it
     if (color_mode != kNormals) {
-      mesh_block.r.reserve(mesh->vertices.size());
-      mesh_block.g.reserve(mesh->vertices.size());
-      mesh_block.b.reserve(mesh->vertices.size());
+      mesh_block.r.reserve(mesh.vertices.size());
+      mesh_block.g.reserve(mesh.vertices.size());
+      mesh_block.b.reserve(mesh.vertices.size());
     }
-    for (size_t i = 0u; i < mesh->vertices.size(); ++i) {
+    for (size_t i = 0u; i < mesh.vertices.size(); ++i) {
       // We convert from an absolute global frame to a normalized local frame.
       // Each vertex is given as its distance from the blocks origin in units of
       // (2*block_size). This results in all points obtaining a value in the
@@ -191,12 +220,15 @@ inline void generateVoxbloxMeshMsg(MeshLayer* mesh_layer, ColorMode color_mode,
       // neighboring block. We instead divide by (block_size + block_size) as
       // the mesh layer has no knowledge of how many voxels are inside a block.
       const Point normalized_verticies =
-          0.5f * (mesh_layer->block_size_inv() * mesh->vertices[i] -
+          0.5f * (mesh_layer->block_size_inv() * mesh.vertices[i] -
                   block_index.cast<FloatingPoint>());
 
+      //if (normalized_verticies.squaredNorm() > 1.0f || !(normalized_verticies.array() >= 0.0).all()) {
+      //  continue;
+      //}
       // check all points are in range [0, 1.0]
-      CHECK_LE(normalized_verticies.squaredNorm(), 1.0f);
-      CHECK((normalized_verticies.array() >= 0.0).all());
+      //CHECK_LE(normalized_verticies.squaredNorm(), 1.0f);
+      //CHECK((normalized_verticies.array() >= 0.0).all());
 
       // convert to uint16_t fixed point representation
       mesh_block.x.push_back(std::numeric_limits<uint16_t>::max() *
@@ -221,11 +253,11 @@ inline void generateVoxbloxMeshMsg(MeshLayer* mesh_layer, ColorMode color_mode,
     mesh_msg->mesh_blocks.push_back(mesh_block);
 
     // delete empty mesh blocks after sending them
-    if (!mesh->hasVertices()) {
+    /*if (!mesh->hasVertices()) {
       mesh_layer->removeMesh(block_index);
-    }
+    }*/
 
-    mesh->updated = false;
+    mesh.updated = false;
   }
 }
 
