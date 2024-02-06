@@ -45,7 +45,7 @@
 namespace voxblox {
 
 struct MeshIntegratorConfig {
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   bool use_color = true;
   float min_weight = 1e-4;
@@ -72,7 +72,7 @@ struct MeshIntegratorConfig {
 template <typename VoxelType>
 class MeshIntegrator {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   void initFromSdfLayer(const Layer<VoxelType>& sdf_layer) {
     voxel_size_ = sdf_layer.voxel_size();
@@ -406,7 +406,7 @@ class MeshIntegrator {
   FloatingPoint block_size_inv_;
 
   // Cached index map.
-  Eigen::Matrix<int, 3, 8> cube_index_offsets_;
+  Eigen::Matrix<int, 3, 8, Eigen::DontAlign> cube_index_offsets_;
 };
 
 }  // namespace voxblox

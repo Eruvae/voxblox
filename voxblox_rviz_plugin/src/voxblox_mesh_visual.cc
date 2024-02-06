@@ -69,6 +69,11 @@ void VoxbloxMeshVisual::setMessage(const voxblox_msgs::Mesh::ConstPtr& msg,
       mesh.vertices.emplace_back(mesh_x, mesh_y, mesh_z);
     }
 
+    if (mesh.vertices.size() % 3 != 0) {
+      mesh.vertices.resize(mesh.vertices.size() - (mesh.vertices.size() % 3));
+      mesh.indices.resize(mesh.indices.size() - (mesh.indices.size() % 3));
+    }
+
     // calculate normals
     mesh.normals.reserve(mesh.vertices.size());
     for (size_t i = 0; i < mesh.vertices.size(); i += 3) {

@@ -21,7 +21,7 @@ namespace voxblox {
  */
 class ThreadSafeIndex {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   // NOTE: The ThreadSafeIndex base destructor must be marked virtual.
   //       Otherwise the destructors of derived classes don't get called when

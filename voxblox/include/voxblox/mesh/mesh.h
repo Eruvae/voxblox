@@ -35,7 +35,7 @@ namespace voxblox {
  */
 struct Mesh {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   typedef std::shared_ptr<Mesh> Ptr;
   typedef std::shared_ptr<const Mesh> ConstPtr;

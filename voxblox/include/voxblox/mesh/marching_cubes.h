@@ -34,7 +34,7 @@ namespace voxblox {
  */
 class MarchingCubes {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   static const int kTriangleTable[256][16];
   static const int kEdgeIndexPairs[12][2];

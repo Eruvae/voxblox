@@ -22,7 +22,7 @@ namespace voxblox {
  */
 class MeshLayer {
  public:
-  EIGEN_MAKE_ALIGNED_OPERATOR_NEW
+  //EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 
   typedef std::shared_ptr<MeshLayer> Ptr;
   typedef std::shared_ptr<const MeshLayer> ConstPtr;
